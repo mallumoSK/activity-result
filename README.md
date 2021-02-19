@@ -17,6 +17,9 @@ repositories {
         url = uri("https://mallumo.jfrog.io/artifactory/gradle-dev-local")
     }
 }
+dependencies {
+    implementation "tk.mallumo:activity-result:$version_activity_result"
+}
 ```
 
 ## Example
