@@ -6,13 +6,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticAmbientOf
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import java.util.concurrent.atomic.AtomicInteger
@@ -23,20 +24,23 @@ import kotlin.reflect.KClass
  * ## Tool for handling android activity response
  * ### Example:
  * ```@kotlin
- * Providers(AmbientActivityResult provides ActivityResult.get()) {
+ * CompositionLocalProvider(LocalActivityResult provides ActivityResult.get()) {
  *      //...
  * }
  * ```
  * @see ActivityResult
  * */
 @Suppress("unused")
-val AmbientActivityResult = staticAmbientOf<ActivityResult> { error("Unexpected error") }
+val LocalActivityResult = staticCompositionLocalOf<ActivityResult> { error("Unexpected error") }
 
+@Deprecated("Use LocalActivityResult", replaceWith = ReplaceWith("LocalActivityResult"))
+val AmbientActivityResult
+    get() = LocalActivityResult
 /**
  * ## Tool for handling android activity response
  * ### Example:
  * ```@kotlin
- * Providers(AmbientActivityResult provides ActivityResultHolder.get()) {
+ * CompositionLocalProvider(LocalActivityResult provides ActivityResult.get()) {
  *      //...
  * }
  * ```
@@ -52,7 +56,7 @@ abstract class ActivityResult {
         @Composable
         fun get(): ActivityResult {
             @SuppressLint("ComposableNaming")
-            val ctx = AmbientContext.current
+            val ctx = LocalContext.current
             return remember(ctx) {
                 if (ctx is ComponentActivity) ActivityResultImpl(context = ctx)
                 else defaultPreview
@@ -72,7 +76,7 @@ abstract class ActivityResult {
                     vararg permission: String,
                     response: Permission.() -> Unit
                 ) {
-
+                    Log.e("call-permission", "Call permissions in preview")
                 }
 
                 override fun activity(
@@ -80,6 +84,7 @@ abstract class ActivityResult {
                     launchOpt: ActivityOptionsCompat?,
                     response: (resultCode: Int, data: Intent?) -> Unit
                 ) {
+                    Log.e("call-intent", "Call activity intent in preview mode")
                 }
 
                 override fun <T : Activity> activity(
@@ -87,7 +92,7 @@ abstract class ActivityResult {
                     launchOpt: ActivityOptionsCompat?,
                     response: (resultCode: Int, data: Intent?) -> Unit
                 ) {
-
+                    Log.e("call-intent", "Call activity intent in preview mode")
                 }
             }
         }

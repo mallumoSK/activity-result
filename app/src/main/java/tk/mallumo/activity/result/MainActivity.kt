@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,11 +14,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.setContent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tk.mallumo.activity.result.ui.theme.ActivityresultTheme
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ActivityresultTheme {
-                Providers(AmbientActivityResult provides ActivityResult.get()) {
+                CompositionLocalProvider(LocalActivityResult provides ActivityResult.get()) {
                     // A surface container using the 'background' color from the theme
                     Surface(color = MaterialTheme.colors.background) {
                         ContentUI()
@@ -55,7 +55,7 @@ fun ContentUI() {
 @Composable
 fun ActivityCallUI() {
     val activityCallResult = remember { mutableStateOf("NOT CALLED") }
-    val ar = AmbientActivityResult.current
+    val ar = LocalActivityResult.current
     Button(onClick = {
         //call as simply as possible :)
         //there is alternative for inline call as -> ar.activity<SomeActivity>()
@@ -76,7 +76,7 @@ fun ActivityCallUI() {
 
 @Composable
 fun PermissionUI() {
-    val ar = AmbientActivityResult.current
+    val ar = LocalActivityResult.current
     val permissionInfo = remember { mutableStateOf("") }
     Button(onClick = {
         // call permission
@@ -103,7 +103,7 @@ fun PermissionUI() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    Providers(AmbientActivityResult provides ActivityResult.get()) {
+    CompositionLocalProvider(LocalActivityResult provides ActivityResult.get()) {
         ActivityresultTheme {
             ContentUI()
         }

@@ -3,8 +3,8 @@
 ## handling activity and permission result inside Jetpack Compose
 
 ```
-kotlin_version = '1.4.21'
-compose_version = '1.0.0-alpha10'
+kotlin_version = '1.4.30'
+compose_version = '1.0.0-beta01'
 ```
 
 ![https://mallumo.jfrog.io/artifactory/gradle-dev-local/tk/mallumo/activity-result/](https://img.shields.io/maven-metadata/v?color=%234caf50&metadataUrl=https%3A%2F%2Fmallumo.jfrog.io%2Fartifactory%2Fgradle-dev-local%2Ftk%2Fmallumo%2Factivity-result%2Fmaven-metadata.xml&style=for-the-badge "Version")
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Providers(AmbientActivityResult provides ActivityResult.get()) {
+            CompositionLocalProvider(LocalActivityResult provides ActivityResult.get()) {
                 SampleTheme(darkTheme = true) {
                     // rest of code
                 }
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun ActivityCallUI() {
     val activityCallResult = remember { mutableStateOf("NOT CALLED") }
-    val ar = AmbientActivityResult.current
+    val ar = LocalActivityResult.current
     Button(onClick = {
         //call as simply as possible :)
         //there is alternative for inline call as -> ar.activity<SomeActivity>()
@@ -73,7 +73,7 @@ fun ActivityCallUI() {
 ```kotlin
 @Composable
 fun PermissionUI() {
-    val ar = AmbientActivityResult.current
+    val ar = LocalActivityResult.current
     val permissionInfo = remember { mutableStateOf("") }
     Button(onClick = {
         // call permission
