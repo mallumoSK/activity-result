@@ -3,8 +3,8 @@
 ## handling activity and permission result inside Jetpack Compose
 
 ```
-kotlin_version = '1.4.30'
-compose_version = '1.0.0-beta01'
+kotlin_version = '1.4.31'
+compose_version = '1.0.0-beta03'
 ```
 
 ![https://mallumo.jfrog.io/artifactory/gradle-dev-local/tk/mallumo/activity-result/](https://img.shields.io/maven-metadata/v?color=%234caf50&metadataUrl=https%3A%2F%2Fmallumo.jfrog.io%2Fartifactory%2Fgradle-dev-local%2Ftk%2Fmallumo%2Factivity-result%2Fmaven-metadata.xml&style=for-the-badge "Version")
