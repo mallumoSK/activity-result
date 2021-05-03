@@ -1,6 +1,5 @@
 package tk.mallumo.activity.result
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
@@ -22,7 +21,6 @@ abstract class BackPress {
          */
         @Composable
         fun get(): BackPress {
-            @SuppressLint("ComposableNaming")
             val ctx = LocalContext.current
             val owner = LocalLifecycleOwner.current
             return remember(ctx) {
@@ -37,32 +35,48 @@ abstract class BackPress {
         /**
          * Instance creator outside of compose
          */
-        fun get(activity: ComponentActivity): BackPress {
+        fun get(
+            activity: ComponentActivity,
+            owner: LifecycleOwner = activity
+        ): BackPress {
             return BackPressImpl(
                 context = activity,
-                owner = activity
+                owner = owner
             )
         }
 
         private val defaultPreview by lazy {
             object : BackPress() {
-                override fun registerBackPress(key: String, consumer: () -> Unit) {
-                }
+                override fun registerBackPress(key: String, consumer: () -> Unit) {}
 
-                override fun unRegisterBackPress(key: String) {
-                }
+                override fun unRegisterBackPress(key: String) {}
 
-                override fun virtualBackPress() {
-                }
-
+                override fun virtualBackPress() {}
             }
         }
     }
 
+    /**
+     * * register bac-press callback by key
+     *
+     * @param key unique id of callback
+     * @param consumer is invoked on back-press event
+     * @see unRegisterBackPress
+     */
     abstract fun registerBackPress(key: String, consumer: () -> Unit)
 
+    /**
+     * * remove previously registered callback consumer by key
+     *
+     *
+     * @param key unique id of callback
+     * @see registerBackPress
+     */
     abstract fun unRegisterBackPress(key: String)
 
+    /**
+     * * invoke back-press from source code
+     */
     abstract fun virtualBackPress()
 }
 
@@ -83,7 +97,6 @@ private class BackPressImpl(
         }
         component.onBackPressedDispatcher.addCallback(owner, stack[key]!!)
     }
-
 
     override fun unRegisterBackPress(key: String) {
         stack[key]?.isEnabled = false
