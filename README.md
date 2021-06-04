@@ -4,8 +4,13 @@
 
 ```
 //Current version
+kotlin_version = '1.5.10'
+compose_version = '1.0.0-beta08'
+
+//Previous
 kotlin_version = '1.4.32'
 compose_version = '1.0.0-beta05'
+activity-result = 2.1.0
 
 //Previous
 kotlin_version = '1.4.31'

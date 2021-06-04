@@ -33,9 +33,6 @@ import kotlin.reflect.KClass
 @Suppress("unused")
 val LocalActivityResult = staticCompositionLocalOf<ActivityResult> { error("Unexpected error") }
 
-@Deprecated("Use LocalActivityResult", replaceWith = ReplaceWith("LocalActivityResult"))
-val AmbientActivityResult
-    get() = LocalActivityResult
 /**
  * ## Tool for handling android activity response
  * ### Example:
