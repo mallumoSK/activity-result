@@ -16,6 +16,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KClass
 
@@ -69,10 +70,7 @@ abstract class ActivityResult {
 
         private val defaultPreview by lazy {
             object : ActivityResult() {
-                override fun permission(
-                    vararg permission: String,
-                    response: Permission.() -> Unit
-                ) {
+                override fun requestSelfPermission(vararg permission: String, response: Permission.() -> Unit) {
                     Log.e("call-permission", "Call permissions in preview")
                 }
 
@@ -91,9 +89,20 @@ abstract class ActivityResult {
                 ) {
                     Log.e("call-intent", "Call activity intent in preview mode")
                 }
+
+                override fun checkSelfPermission(vararg permissions: String): Boolean {
+                    Log.e("isPermissionValid", permissions.toString())
+                    return false
+                }
             }
         }
     }
+
+    @Deprecated(
+        message = "use requestSelfPermission",
+        replaceWith = ReplaceWith("requestSelfPermission")
+    )
+    fun permission(vararg permission: String, response: Permission.() -> Unit) = requestSelfPermission(permission = permission, response = response)
 
     /**
      * Call uses-permission
@@ -103,7 +112,7 @@ abstract class ActivityResult {
      * @see Permission.denied
      * @see Manifest.permission
      */
-    abstract fun permission(vararg permission: String, response: Permission.() -> Unit)
+    abstract fun requestSelfPermission(vararg permission: String, response: Permission.() -> Unit)
 
     /**
      * Call activity by intent
@@ -123,6 +132,8 @@ abstract class ActivityResult {
         launchOpt: ActivityOptionsCompat? = null,
         response: (resultCode: Int, data: Intent?) -> Unit = { _, _ -> }
     )
+
+    abstract fun checkSelfPermission(vararg permissions: String): Boolean
 
     @Suppress("MemberVisibilityCanBePrivate")
     inline fun <reified T : Activity> activity(
@@ -174,7 +185,7 @@ private class ActivityResultImpl(
      * @see ActivityResult.Permission.granted
      * @see ActivityResult.Permission.denied
      */
-    override fun permission(vararg permission: String, response: Permission.() -> Unit) {
+    override fun requestSelfPermission(vararg permission: String, response: Permission.() -> Unit) {
         val request = Permission(permission.toList())
         response(request)
 
@@ -252,7 +263,14 @@ private class ActivityResultImpl(
         activity(Intent(component, activityClass.java), launchOpt, response)
     }
 
-
+    /**
+     * Determine whether <em>you</em> have been granted a particular permission.
+     * @param permissions The names of the permission being checked.
+     * @return true - all granted OR false one or more denied
+     */
+    override fun checkSelfPermission(vararg permissions: String): Boolean {
+        return permissions.all { ContextCompat.checkSelfPermission(component, it) == PackageManager.PERMISSION_GRANTED }
+    }
 }
 
 
